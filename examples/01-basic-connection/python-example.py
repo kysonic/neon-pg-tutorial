@@ -47,15 +47,18 @@ def connect_and_query():
         conn.commit()
         print('\n✓ Table "users" created (if it didn\'t exist)')
         
-        # Example: Insert a record
+        # Example: Insert a record (with ON CONFLICT to make it idempotent)
         cursor.execute(
-            'INSERT INTO users (name, email) VALUES (%s, %s) RETURNING *',
+            'INSERT INTO users (name, email) VALUES (%s, %s) ON CONFLICT (email) DO NOTHING RETURNING *',
             ('Jane Smith', 'jane@example.com')
         )
         inserted_user = cursor.fetchone()
         conn.commit()
-        print('\n✓ Inserted user:')
-        print(dict(inserted_user))
+        if inserted_user:
+            print('\n✓ Inserted user:')
+            print(dict(inserted_user))
+        else:
+            print('\n✓ User already exists (skipped insertion)')
         
         # Example: Query records
         cursor.execute('SELECT * FROM users')

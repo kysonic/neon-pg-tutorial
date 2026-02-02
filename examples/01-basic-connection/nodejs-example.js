@@ -37,13 +37,17 @@ async function connectAndQuery() {
     `);
     console.log('\n✓ Table "users" created (if it didn\'t exist)');
 
-    // Example: Insert a record
+    // Example: Insert a record (with ON CONFLICT to make it idempotent)
     const insertResult = await client.query(
-      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO users (name, email) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING RETURNING *',
       ['John Doe', 'john@example.com']
     );
-    console.log('\n✓ Inserted user:');
-    console.log(insertResult.rows[0]);
+    if (insertResult.rows.length > 0) {
+      console.log('\n✓ Inserted user:');
+      console.log(insertResult.rows[0]);
+    } else {
+      console.log('\n✓ User already exists (skipped insertion)');
+    }
 
     // Example: Query records
     const queryResult = await client.query('SELECT * FROM users');
