@@ -1,0 +1,21 @@
+{
+  "name": "neon-pg-tutorial-basic-connection",
+  "version": "1.0.0",
+  "description": "Basic PostgreSQL connection examples for Neon tutorial",
+  "main": "nodejs-example.js",
+  "scripts": {
+    "start": "node nodejs-example.js"
+  },
+  "keywords": [
+    "postgresql",
+    "neon",
+    "database",
+    "tutorial"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1"
+  }
+}
