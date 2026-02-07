@@ -67,3 +67,101 @@ GROUP BY
         (segment),
         ()
     );
+
+--- 
+
+SELECT
+	GROUPING(brand) grouping_brand,
+	GROUPING(segment) grouping_segment,
+	brand,
+	segment,
+	SUM (quantity)
+FROM
+	sales
+GROUP BY
+	GROUPING SETS (
+		(brand),
+		(segment),
+		()
+	)
+ORDER BY
+	brand,
+	segment;
+
+-- CUBE --
+
+CUBE(c1,c2,c3)
+
+GROUPING SETS (
+    (c1,c2,c3),
+    (c1,c2),
+    (c1,c3),
+    (c2,c3),
+    (c1),
+    (c2),
+    (c3),
+    ()
+ )
+
+ SELECT
+    brand,
+    segment,
+    SUM (quantity)
+FROM
+    sales
+GROUP BY
+    CUBE (brand, segment)
+ORDER BY
+    brand,
+    segment;
+
+-- ROLLUP -- 
+
+ROLLUP(c1,c2,c3) 
+
+GROUPING SETS 
+(c1, c2, c3)
+(c1, c2)
+(c1)
+()
+
+--- SCHEMA ---
+DROP TABLE IF EXISTS sales;
+CREATE TABLE sales (
+    brand VARCHAR NOT NULL,
+    segment VARCHAR NOT NULL,
+    quantity INT NOT NULL,
+    PRIMARY KEY (brand, segment)
+);
+INSERT INTO sales (brand, segment, quantity)
+VALUES
+    ('ABC', 'Premium', 100),
+    ('ABC', 'Basic', 200),
+    ('XYZ', 'Premium', 100),
+    ('XYZ', 'Basic', 300);
+--- SCHEMA ---
+SELECT
+    brand,
+    segment,
+    SUM (quantity)
+FROM
+    sales
+GROUP BY
+    ROLLUP (brand, segment)
+ORDER BY
+    brand,
+    segment;
+---
+SELECT
+    EXTRACT (YEAR FROM rental_date) y,
+    EXTRACT (MONTH FROM rental_date) M,
+    EXTRACT (DAY FROM rental_date) d,
+    COUNT (rental_id)
+FROM
+    rental
+GROUP BY
+    ROLLUP (
+        EXTRACT (YEAR FROM rental_date),
+        EXTRACT (MONTH FROM rental_date),
+        EXTRACT (DAY FROM rental_date)
+    );
